@@ -7,11 +7,7 @@ import javax.persistence.EntityManager;
 /**
  * JPA DAO generic implementation. All JPA DAO should inherit from this class.
  * 
- * @author <a href="mailto:jmaudes@ubu.es">Jesús Maudes</a>
- * @author <a href="mailto:rmartico@ubu.es">Raúl Marticorena</a>
- * @author <a href="mailto:mmabad@ubu.es">Mario Martínez</a>
- * @author <a href="mailto:operez@ubu.es">Óscar Pérez</a>
- * @author <a href="mailto:pgdiaz@ubu.es">Pablo García</a> 
+ * @author <a href="mailto:rpa1004@alu.ubu.es">Rodrigo Pasucual Arnaiz</a>
  * 
  * @param <E> element type (entity)
  * @param <K> key type

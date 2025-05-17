@@ -2,6 +2,7 @@ package es.ubu.lsi.model.multas;
 
 import java.io.Serializable;
 import javax.persistence.*;
+import java.util.Set;
 
 
 /**
@@ -10,20 +11,32 @@ import javax.persistence.*;
  */
 @Entity
 @NamedQuery(name="Vehiculo.findAll", query="SELECT v FROM Vehiculo v")
+
+@NamedEntityGraphs({
+	@NamedEntityGraph(name = "Vehiculo.graph", attributeNodes = {
+			@NamedAttributeNode(value = "conductores", subgraph = "conductoresGraph")
+	}, subgraphs = {
+			@NamedSubgraph(name = "conductoresGraph", attributeNodes = {
+					@NamedAttributeNode(value = "incidencias", subgraph = "incidenciasGraph")
+			}),
+			@NamedSubgraph(name = "incidenciasGraph", attributeNodes = {
+					@NamedAttributeNode(value = "tipoIncidencia")
+			})
+	})
+})
 public class Vehiculo implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String idauto;
 
-	private String ciudad;
-
-	private String cp;
-
-	private String direccion;
+	@Embedded 
+	private DireccionPostal direccionPostal;
 
 	private String nombre;
+	
+	@OneToMany(mappedBy = "vehiculo")
+	private Set<Conductor> conductores;
 
 	public Vehiculo() {
 	}
@@ -36,28 +49,12 @@ public class Vehiculo implements Serializable {
 		this.idauto = idauto;
 	}
 
-	public String getCiudad() {
-		return this.ciudad;
+	public void setDireccionPostal(DireccionPostal direccionPostal) {
+		this.direccionPostal = direccionPostal;
 	}
 
-	public void setCiudad(String ciudad) {
-		this.ciudad = ciudad;
-	}
-
-	public String getCp() {
-		return this.cp;
-	}
-
-	public void setCp(String cp) {
-		this.cp = cp;
-	}
-
-	public String getDireccion() {
-		return this.direccion;
-	}
-
-	public void setDireccion(String direccion) {
-		this.direccion = direccion;
+	public DireccionPostal getDireccionPostal() {
+		return this.direccionPostal;
 	}
 
 	public String getNombre() {
@@ -67,5 +64,37 @@ public class Vehiculo implements Serializable {
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
+	
+	public Set<Conductor> getConductores() {
+		return this.conductores;
+	}
 
+	public void setConductores(Set<Conductor> conductores) {
+		this.conductores = conductores;
+	}
+
+	public void addConductor(Conductor conductor) {
+	    if (conductor == null) return;
+
+	    Set<Conductor> conductores = getConductores();
+
+	    // Solo agregamos si no está ya en el set
+	    if (conductores.add(conductor)) {
+	        // Si ya tenía un vehículo lo eliminamos de ese vehículo
+	        Vehiculo vehiculoAnterior = conductor.getVehiculo();
+	        if (vehiculoAnterior != null && vehiculoAnterior != this) {
+	            vehiculoAnterior.getConductores().remove(conductor);
+	        }
+	        conductor.setVehiculo(this);
+	    }
+	}
+
+
+	public void removeConductor(Conductor conductor) {
+	    if (conductor == null) return;
+	    
+	    if (getConductores().remove(conductor)) {
+	        conductor.setVehiculo(null);
+	    }
+	}
 }

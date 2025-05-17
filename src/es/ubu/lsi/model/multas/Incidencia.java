@@ -9,7 +9,11 @@ import javax.persistence.*;
  * 
  */
 @Entity
-@NamedQuery(name="Incidencia.findAll", query="SELECT i FROM Incidencia i")
+@NamedQueries({
+	@NamedQuery(name = "Incidencia.findAll", query = "SELECT i FROM Incidencia i"),
+	@NamedQuery(name = "Incidencia.deleteAllWithNIF", query = "DELETE FROM Incidencia i WHERE i.id.nif = :p"),
+	@NamedQuery(name = "Incidencia.findByConductor", query = "SELECT i FROM Incidencia i WHERE i.id.nif = :nif")
+})
 public class Incidencia implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -19,9 +23,23 @@ public class Incidencia implements Serializable {
 	@Lob
 	private String anotacion;
 
-	private java.math.BigDecimal idtipo;
+	@MapsId("nif")
+	@ManyToOne
+	@JoinColumn(name = "NIF")
+	private Conductor conductor;
+	
+	@ManyToOne
+	@JoinColumn(name = "IDTIPO")
+	private TipoIncidencia tipoIncidencia;
 
 	public Incidencia() {
+	}
+	
+	public Incidencia(IncidenciaPK id, String anotacion, Conductor conductor, TipoIncidencia tipoIncidencia) {
+		this.id = id;
+		this.anotacion = anotacion;
+		this.conductor = conductor;
+		this.tipoIncidencia = tipoIncidencia;
 	}
 
 	public IncidenciaPK getId() {
@@ -40,12 +58,35 @@ public class Incidencia implements Serializable {
 		this.anotacion = anotacion;
 	}
 
-	public java.math.BigDecimal getIdtipo() {
-		return this.idtipo;
+	public Conductor getConductor() {
+		return this.conductor;
 	}
 
-	public void setIdtipo(java.math.BigDecimal idtipo) {
-		this.idtipo = idtipo;
+	public void setConductor(Conductor conductor) {
+	    if (this.conductor != null && this.conductor != conductor) {
+	        this.conductor.getIncidencias().remove(this);
+	    }
+
+	    this.conductor = conductor;
+
+	    if (conductor != null) {
+	        conductor.getIncidencias().add(this);
+	    }
+	}
+	
+	public TipoIncidencia getTipoIncidencia() {
+		return this.tipoIncidencia;
 	}
 
+	public void setTipoIncidencia(TipoIncidencia tipoIncidencia) {
+	    if (this.tipoIncidencia != null && this.tipoIncidencia != tipoIncidencia) {
+	        this.tipoIncidencia.getIncidencias().remove(this);
+	    }
+
+	    this.tipoIncidencia = tipoIncidencia;
+
+	    if (tipoIncidencia != null) {
+	        tipoIncidencia.getIncidencias().add(this);
+	    }
+	}
 }

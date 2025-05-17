@@ -10,6 +10,7 @@
 		<class>es.ubu.lsi.model.multas.Incidencia</class>
 		<class>es.ubu.lsi.model.multas.IncidenciaPK</class>
 		<class>es.ubu.lsi.model.multas.TipoIncidencia</class>
+		<class>es.ubu.lsi.model.multas.DireccionPostal</class>
 		
 		<!-- Eclipse Link provider (other provider) -->
 		<!-- <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider> -->

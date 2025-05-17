@@ -3,6 +3,7 @@ package es.ubu.lsi.model.multas;
 import java.io.Serializable;
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.Set;
 
 
 /**
@@ -15,23 +16,24 @@ public class Conductor implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String nif;
 
 	private String apellido;
 
-	private String ciudad;
+	@ManyToOne
+	@JoinColumn(name = "IDAUTO")
+	private Vehiculo vehiculo;
 
-	private String cp;
-
-	private String direccion;
-
-	private String idauto;
-
+	@OneToMany(mappedBy = "conductor")
+	private Set<Incidencia> incidencias;
+	
 	private String nombre;
 
 	private BigDecimal puntos;
 
+	@Embedded
+	private DireccionPostal direccionPostal;
+	
 	public Conductor() {
 	}
 
@@ -50,37 +52,53 @@ public class Conductor implements Serializable {
 	public void setApellido(String apellido) {
 		this.apellido = apellido;
 	}
+	
+	public Vehiculo getVehiculo() {
+		return this.vehiculo;
+	}
+	
+	public void setVehiculo(Vehiculo vehiculo) {
+	    if (this.vehiculo != null && this.vehiculo != vehiculo) {
+	        this.vehiculo.getConductores().remove(this);
+	    }
 
-	public String getCiudad() {
-		return this.ciudad;
+	    this.vehiculo = vehiculo;
+
+	    if (vehiculo != null) {
+	        vehiculo.getConductores().add(this);
+	    }
+	}
+	
+	public Set<Incidencia> getIncidencias() {
+		return this.incidencias;
 	}
 
-	public void setCiudad(String ciudad) {
-		this.ciudad = ciudad;
+	public void setIncidencias(Set<Incidencia> incidencias) {
+		this.incidencias = incidencias;
+	}
+	
+	public void addIncidencia(Incidencia incidencia) {
+	    if (incidencia == null) return;
+
+	    Set<Incidencia> incidencias = getIncidencias();
+
+	    if (incidencias.add(incidencia)) {
+	        Conductor anterior = incidencia.getConductor();
+	        if (anterior != null && anterior != this) {
+	            anterior.getIncidencias().remove(incidencia);
+	        }
+	        incidencia.setConductor(this);
+	    }
 	}
 
-	public String getCp() {
-		return this.cp;
-	}
+	public void removeIncidencia(Incidencia incidencia) {
+	    if (incidencia == null) return;
 
-	public void setCp(String cp) {
-		this.cp = cp;
-	}
-
-	public String getDireccion() {
-		return this.direccion;
-	}
-
-	public void setDireccion(String direccion) {
-		this.direccion = direccion;
-	}
-
-	public String getIdauto() {
-		return this.idauto;
-	}
-
-	public void setIdauto(String idauto) {
-		this.idauto = idauto;
+	    if (getIncidencias().remove(incidencia)) {
+	        if (incidencia.getConductor() == this) {
+	            incidencia.setConductor(null);
+	        }
+	    }
 	}
 
 	public String getNombre() {
@@ -97,6 +115,22 @@ public class Conductor implements Serializable {
 
 	public void setPuntos(BigDecimal puntos) {
 		this.puntos = puntos;
+	}
+	
+	
+	public void setDireccionPostal(DireccionPostal direccionPostal) {
+		this.direccionPostal = direccionPostal;
+	}
+
+	public DireccionPostal getDireccionPostal() {
+		return this.direccionPostal;
+	}
+
+	@Override
+	public String toString() {
+
+		return "Conductor [nif=" + this.getNif() + ", nombre=" + this.getNombre() + ", apellido=" + this.getApellido()
+				+ ", direccionPostal=" + this.getDireccionPostal() + ", puntos=" + this.getPuntos() + "]";
 	}
 
 }

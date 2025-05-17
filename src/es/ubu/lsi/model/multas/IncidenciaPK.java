@@ -20,6 +20,10 @@ public class IncidenciaPK implements Serializable {
 
 	public IncidenciaPK() {
 	}
+	public IncidenciaPK(String nif, java.util.Date fecha) {
+		this.nif = nif;
+		this.fecha = fecha;
+	}
 	public java.util.Date getFecha() {
 		return this.fecha;
 	}
