@@ -85,4 +85,10 @@ public class TipoIncidencia implements Serializable {
 	        }
 	    }
 	}
+
+	@Override
+	public String toString() {
+		return "TipoIncidencia [id=" + this.getId() + ", descripcion=" + this.getDescripcion() + ", valor="
+				+ this.getValor() + "]";
+	}
 }

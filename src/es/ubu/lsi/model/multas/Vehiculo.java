@@ -97,4 +97,10 @@ public class Vehiculo implements Serializable {
 	        conductor.setVehiculo(null);
 	    }
 	}
+	
+	@Override
+	public String toString() {
+		return "Vehiculo [idauto=" + this.getIdauto() + ", nombre= " + this.getNombre() + ", direccionPostal= "
+				+ this.getDireccionPostal() + "]";
+	}
 }

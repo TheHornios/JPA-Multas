@@ -33,4 +33,10 @@ public class DireccionPostal {
 	public void setCiudad(String ciudad) {
 		this.ciudad = ciudad;
 	}
+	
+	@Override
+	public String toString() {
+		return "DireccionPostal [direccion=" + this.getDireccion() + ", codigoPostal=" + this.getCp() + ", ciudad="
+				+ this.getCiudad() + "]";
+	}
 }

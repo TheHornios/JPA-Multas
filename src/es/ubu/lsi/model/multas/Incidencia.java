@@ -89,4 +89,10 @@ public class Incidencia implements Serializable {
 	        tipoIncidencia.getIncidencias().add(this);
 	    }
 	}
+	
+	@Override
+	public String toString() {
+		return "Incidencia [id= " + this.getId() + ", anotacion=" + this.getAnotacion() + ", conductor="
+				+ this.getConductor() + ", tipoIncidencia=" + this.getTipoIncidencia() + "]";
+	}
 }
