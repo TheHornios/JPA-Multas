@@ -74,5 +74,45 @@ public class ServiceImpl extends PersistenceService implements Service {
         }
     }
 
-    
+    @Override
+    public void indultar(String nif) throws PersistenceException {
+        EntityManager em = createSession();
+
+        try {
+            beginTransaction(em);
+
+            ConductorDAO conductorDAO = new ConductorDAO(em);
+            IncidenciaDAO incidenciaDAO = new IncidenciaDAO(em);
+
+            Conductor conductor = conductorDAO.findById(nif);
+            if (conductor == null) {
+                throw new IncidentException(IncidentError.NOT_EXIST_DRIVER);
+            }
+
+            conductor.setPuntos(BigDecimal.valueOf(MAXIMO_PUNTOS));
+
+            incidenciaDAO.deleteAllWithNIF(nif);
+
+            Set<Incidencia> incidencias = new HashSet<>(conductor.getIncidencias());
+            for (Incidencia incidencia : incidencias) {
+                conductor.removeIncidencia(incidencia);
+            }
+
+            commitTransaction(em);
+
+        } catch (IncidentException e) {
+            rollbackTransaction(em);
+            logger.error(e.getLocalizedMessage(), e);
+            throw e;
+        } catch (Exception e) {
+            rollbackTransaction(em);
+            logger.error("Excepción inesperada:", e);
+            throw new PersistenceException("Error general:", e);
+        } finally {
+            close(em);
+            logger.debug("Sesión cerrada.");
+        }
+    }
+
+   
 }
