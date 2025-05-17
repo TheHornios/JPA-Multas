@@ -114,5 +114,26 @@ public class ServiceImpl extends PersistenceService implements Service {
         }
     }
 
-   
+    @Override
+    public List<Vehiculo> consultarVehiculos() throws PersistenceException {
+        EntityManager em = createSession();
+
+        try {
+            beginTransaction(em);
+
+            VehiculoDAO vehiculoDAO = new VehiculoDAO(em);
+            List<Vehiculo> vehiculos = vehiculoDAO.findAllWithGraph();
+
+            commitTransaction(em);
+            return vehiculos;
+
+        } catch (Exception e) {
+            rollbackTransaction(em);
+            logger.error("Excepción inesperada:", e);
+            throw new PersistenceException("Error general:", e);
+        } finally {
+            close(em);
+            logger.debug("Sesión cerrada.");
+        }
+    }
 }
